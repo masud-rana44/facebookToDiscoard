@@ -2,8 +2,9 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const facebookService = require("./facebookService");
-const discordService = require("./discordService");
+// const discordService = require("./discordService");
 const Post = require("./postModal");
+require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -11,7 +12,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(bodyParser.json());
 
-const dbUrl = `mongodb+srv://admin:test1234@cluster0.egfjetc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+const dbUrl = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.egfjetc.mongodb.net/facebook_discord_bot?retryWrites=true&w=majority&appName=Cluster0`;
 
 // MongoDB connection
 mongoose
@@ -45,6 +46,7 @@ app.post("/api/groups", async (req, res) => {
     await post.save();
     res.json(post);
   } catch (err) {
+    // console.error("Error saving post: ", err);
     res.status(500).send("Server error");
   }
 });
@@ -82,16 +84,17 @@ app.get("/api/bot/logs", async (req, res) => {
 // Start pulling facebook and send to discord (every 60s)
 setInterval(async () => {
   const groups = await Post.find().distinct("groupId");
+  console.log("Fetching ...", groups);
   for (const groupId of groups) {
     const posts = await facebookService.getFacebookPosts(groupId);
     for (const post of posts) {
       if (await Post.isNewPost(post.id)) {
-        await discordService.sendToDiscordChannel("channel-id", post.message);
-        await Post.create({ groupId, postId: post.id, message: post.message });
+        // await discordService.sendToDiscordChannel("channel-id", post.message);
+        // await Post.create({ groupId, postId: post.id, message: post.message });
       }
     }
   }
-}, 60000);
+}, 6000);
 
 // Start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

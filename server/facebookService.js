@@ -10,6 +10,7 @@ async function getFacebookPosts(groupId) {
       id: post.id,
       message: post.message,
     }));
+    console.log("Fetched Facebook posts: ", posts);
     return posts;
   } catch (error) {
     console.error("Error fetching Facebook posts: ", error);

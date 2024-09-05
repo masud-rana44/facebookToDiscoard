@@ -7,11 +7,11 @@ const postSchema = new mongoose.Schema({
   },
   postId: {
     type: String,
-    required: true,
+    // required: true,
   },
   message: {
     type: String,
-    required: true,
+    // required: true,
   },
   date: {
     type: Date,
