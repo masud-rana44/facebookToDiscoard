@@ -79,5 +79,19 @@ app.get("/api/bot/logs", async (req, res) => {
   }
 });
 
+// Start pulling facebook and send to discord (every 60s)
+setInterval(async () => {
+  const groups = await Post.find().distinct("groupId");
+  for (const groupId of groups) {
+    const posts = await facebookService.getFacebookPosts(groupId);
+    for (const post of posts) {
+      if (await Post.isNewPost(post.id)) {
+        await discordService.sendToDiscordChannel("channel-id", post.message);
+        await Post.create({ groupId, postId: post.id, message: post.message });
+      }
+    }
+  }
+}, 60000);
+
 // Start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
