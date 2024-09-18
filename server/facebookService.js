@@ -5,7 +5,9 @@ async function getFacebookPosts(groupId) {
   const url = `https://graph.facebook.com/${groupId}/feed?access_token=${accessToken}`;
 
   try {
+    console.log(`Fetching Facebook Data with access token: ${accessToken}...`);
     const response = await axios.get(url);
+    console.log("Response: ", response.data);
     const posts = response.data.data.map((post) => ({
       id: post.id,
       message: post.message,

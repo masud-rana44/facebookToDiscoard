@@ -84,7 +84,6 @@ app.get("/api/bot/logs", async (req, res) => {
 // Start pulling facebook and send to discord (every 60s)
 setInterval(async () => {
   const groups = await Post.find().distinct("groupId");
-  console.log("Fetching ...", groups);
   for (const groupId of groups) {
     const posts = await facebookService.getFacebookPosts(groupId);
     for (const post of posts) {
